@@ -76,18 +76,18 @@
   /* Controls grid layout - made more compact */
   .controls {
     display: grid;
-    grid-template-columns: 80px 80px 80px;
-    grid-template-rows: 80px 80px 80px;
-    gap: 8px;
+    grid-template-columns: 60px 60px 60px;
+    grid-template-rows: 60px 60px 60px;
+    gap: 10px;
     justify-content: center;
     margin-top: 10px;
   }
 
-  /* Style for control buttons - smaller */
+  /* Style for control buttons - bigger */
   .btn {
-    width: 80px;
-    height: 80px;
-    font-size: 32px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
     border: 2px solid #fff;
     border-radius: 8px;
     background-color: #333;
@@ -118,15 +118,15 @@
       max-height: 300px;
     }
     .controls {
-      grid-template-columns: 45px 45px 45px;
-      grid-template-rows: 45px 45px 45px;
-      gap: 6px;
+      grid-template-columns: 55px 55px 55px;
+      grid-template-rows: 55px 55px 55px;
+      gap: 8px;
       margin-top: 8px;
     }
     .btn {
-      width: 45px;
-      height: 45px;
-      font-size: 18px;
+      width: 55px;
+      height: 55px;
+      font-size: 22px;
     }
     #levelDisplay {
       font-size: 16px;
@@ -151,15 +151,15 @@
       max-height: 280px;
     }
     .controls {
-      grid-template-columns: 42px 42px 42px;
-      grid-template-rows: 42px 42px 42px;
-      gap: 5px;
+      grid-template-columns: 50px 50px 50px;
+      grid-template-rows: 50px 50px 50px;
+      gap: 8px;
       margin-top: 8px;
     }
     .btn {
-      width: 42px;
-      height: 42px;
-      font-size: 16px;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
     }
     #levelDisplay {
       font-size: 15px;
@@ -453,7 +453,7 @@
         shootCooldown: randInt(50, 80),
         moveCooldown: randInt(30, 60),
         size: 3,
-        edible: false // Tanks are not edible
+        edible: true // Tanks are now edible too!
       };
     }
   }
@@ -714,28 +714,16 @@
           updateScore();
         }
       } else if (level === 2) {
-        // Level 2: jets are edible, tanks damage
-        if (e.edible) {
-          collision = Math.abs(head.x - e.x) < 1.0 && Math.abs(head.y - e.y) < 1.0;
-          if (collision) {
-            size += 3;
-            score += 100;
-            enemies.splice(i, 1);
-            enemies.push(spawnLevel2Enemy());
-            updateScore();
-          }
-        } else {
-          collision = Math.abs(head.x - e.x) < 1.2 && Math.abs(head.y - e.y) < 1.2;
-          if (collision) {
-            size -= 2;
-            updateScore();
-            
-            // Screen flash effect
-            document.body.style.filter = 'brightness(50%) saturate(200%) hue-rotate(0deg)';
-            setTimeout(() => {
-              document.body.style.filter = '';
-            }, 200);
-          }
+        // Level 2: both jets and tanks are edible!
+        collision = Math.abs(head.x - e.x) < 1.0 && Math.abs(head.y - e.y) < 1.0;
+        if (collision) {
+          const sizeBonus = e.type === 'tank' ? 4 : 3; // Tanks give more size
+          const scoreBonus = e.type === 'tank' ? 150 : 100; // Tanks give more score
+          size += sizeBonus;
+          score += scoreBonus;
+          enemies.splice(i, 1);
+          enemies.push(spawnLevel2Enemy());
+          updateScore();
         }
       } else {
         // Level 3+: more dangerous enemies with bigger damage
@@ -1298,9 +1286,9 @@
           drawCircle(e.x, e.y, 0.8, '#448844');
           drawCircle(e.x, e.y, 0.4, '#66aa66');
         } else if (e.type === 'tank') {
-          // Tanks are dangerous - red tint
-          drawRect(Math.floor(e.x), Math.floor(e.y), '#664444', 1, 1);
-          drawCircle(e.x, e.y, 0.3, '#996666');
+          // Tanks are now also edible - blue-green tint
+          drawRect(Math.floor(e.x), Math.floor(e.y), '#446688', 1, 1);
+          drawCircle(e.x, e.y, 0.3, '#6699aa');
         }
       } else {
         // Level 3+ enemies
@@ -1418,7 +1406,7 @@
           if (player.playVideo) {
             player.playVideo();
           }
-        }, 1000);
+    }, 1000);
       } catch (error) {
         console.error('Error loading video:', error);
         setTimeout(hideDeathOverlay, 3000);
